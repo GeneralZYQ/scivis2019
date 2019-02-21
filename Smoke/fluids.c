@@ -31,7 +31,7 @@ const int COLOR_BANDS=2;
 int   scalar_col = 0;           //method for scalar coloring
 int   frozen = 0;               //toggles on/off the animation
 
-int mainWindow, colorbarWindow;
+int mainWindow, colorbarWindow, textbarWindow;
 
 //------ SIMULATION CODE STARTS HERE -----------------------------------------------------------------
 
@@ -454,8 +454,43 @@ void display1(void) {
 	}
 	}
 
-
 	glEnd();
+
+	glutSwapBuffers();
+}
+
+void displayText(void) {
+	
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-2.0, 2.0, -2.0, 2.0, -2.0, 500.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	//gluLookAt(2, 2, 2, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	glScalef(.005, .005, .005);
+	glRotatef(0, 0, 1, 0);
+	glRotatef(0, 0, 0, 1);
+	glRotatef(0, 1, 0, 0);
+	glTranslatef(-300, 0, 0);
+
+	glColor3f(1, 1, 1);
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'H');
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'e');
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'l');
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'l');
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'o');
+
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'W');
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'o');
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'r');
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'l');
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'd');
+	glutStrokeCharacter(GLUT_STROKE_ROMAN, '!');
 
 	glutSwapBuffers();
 }
@@ -559,7 +594,7 @@ int main(int argc, char **argv)
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowSize(500,550);
+	glutInitWindowSize(500,670);
 	mainWindow = glutCreateWindow("Real-time smoke simulation and visualization");
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
@@ -568,8 +603,11 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(keyboard);
 	glutMotionFunc(drag);
 
-	colorbarWindow = glutCreateSubWindow(mainWindow, 0, 510, 500, 40);
+	colorbarWindow = glutCreateSubWindow(mainWindow, 0, 530, 500, 20);
 	glutDisplayFunc(display1);
+
+	textbarWindow = glutCreateSubWindow(mainWindow, 0, 550, 500, 120);
+	glutDisplayFunc(displayText);
 
 	
 	init_simulation(DIM);	//initialize the simulation data structures	
