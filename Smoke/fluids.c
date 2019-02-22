@@ -17,7 +17,7 @@ fftw_real *vx0, *vy0;           //(vx0,vy0) = velocity field at the previous mom
 fftw_real *fx, *fy;	            //(fx,fy)   = user-controlled simulation forces, steered with the mouse 
 fftw_real *rho, *rho0;			//smoke density at the current (rho) and previous (rho0) moment 
 rfftwnd_plan plan_rc, plan_cr;  //simulation domain discretization
-
+float *rainbowColors, *grayColors, *byColors; // ranbow colors, grayscale colors and yellow to blue colors
 
 //--- VISUALIZATION PARAMETERS ---------------------------------------------------------------------
 int   winWidth, winHeight;      //size of the graphics window, in pixels
@@ -55,6 +55,18 @@ void init_simulation(int n)
 	rho0    = (fftw_real*) malloc(dim);
 	plan_rc = rfftw2d_create_plan(n, n, FFTW_REAL_TO_COMPLEX, FFTW_IN_PLACE);
 	plan_cr = rfftw2d_create_plan(n, n, FFTW_COMPLEX_TO_REAL, FFTW_IN_PLACE);
+
+	rainbowColors = (float *)malloc(256);
+	grayColors = (float *)malloc(256);
+	byColors = (float *)malloc(256);
+
+	for (size_t i = 0; i < 256; i++)
+	{
+		float value = (float)i / 256.0;
+
+
+	}
+
 	
 	for (i = 0; i < n * n; i++)                      //Initialize data structures to 0
 	{ vx[i] = vy[i] = vx0[i] = vy0[i] = fx[i] = fy[i] = rho[i] = rho0[i] = 0.0f; }
@@ -180,19 +192,27 @@ void rainbow(float value,float* R,float* G,float* B)
 {                          
    const float dx=0.8; 
    if (value<0) value=0; if (value>1) value=1;
-   value = (6-2*dx)*value+dx;
-   *R = max(0.0,(3-fabs(value-4)-fabs(value-5))/2);
-   *G = max(0.0,(4-fabs(value-2)-fabs(value-4))/2);
-   *B = max(0.0,(3-fabs(value-1)-fabs(value-2))/2);
+
+   float raw = floorf(value * 256.0);
+   float fValue = raw / 256.0;
+
+   fValue = (6-2*dx)*fValue+dx;
+   *R = max(0.0,(3-fabs(fValue -4)-fabs(fValue -5))/2);
+   *G = max(0.0,(4-fabs(fValue -2)-fabs(fValue -4))/2);
+   *B = max(0.0,(3-fabs(fValue -1)-fabs(fValue -2))/2);
 }
 
 void grayscale(float value, float *R, float *G, float *B) {
 	const float dx = 0.8;
 	if (value < 0) value = 0; if (value > 1) value = 1;
-	value = (6 - 2 * dx)*value + dx;
-	float preR = max(0.0, (3 - fabs(value - 4) - fabs(value - 5)) / 2);
-	float preG = max(0.0, (4 - fabs(value - 2) - fabs(value - 4)) / 2);
-	float preB = max(0.0, (3 - fabs(value - 1) - fabs(value - 2)) / 2);
+
+	float raw = floorf(value * 256.0);
+	float fValue = raw / 256.0;
+
+	fValue = (6 - 2 * dx)*fValue + dx;
+	float preR = max(0.0, (3 - fabs(fValue - 4) - fabs(fValue - 5)) / 2);
+	float preG = max(0.0, (4 - fabs(fValue - 2) - fabs(fValue - 4)) / 2);
+	float preB = max(0.0, (3 - fabs(fValue - 1) - fabs(fValue - 2)) / 2);
 
 	// 0.2126R + 0.7152G + 0.0722B
 	/*
@@ -215,7 +235,11 @@ void yellowToBlue(float value, float *R, float *G, float *B) {
 
 	idx1 = floor(value);
 	idx2 = idx1 + 1;
-	fracBetween = value;
+
+	float raw = floorf(value * 256.0);
+	float fValue = raw / 256.0;
+
+	fracBetween = fValue;
 
 	*R = ((color[idx2][0] - color[idx1][0])*fracBetween + color[idx1][0]);
 	*G = ((color[idx2][1] - color[idx1][1])*fracBetween + color[idx1][1]);
