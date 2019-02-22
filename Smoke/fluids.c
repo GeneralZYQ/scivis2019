@@ -227,13 +227,6 @@ void set_colormap(float vy)
 {
    float R,G,B; 
 
-
-   if (vy > 1)
-   {
-	   printf("vy is %d \n", vy);
-	   
-   }
-
    if (scalar_col == COLOR_BLACKWHITE)
 	   //R = G = B = vy;
 	   grayscale(vy, &R, &G, &B);
@@ -607,10 +600,10 @@ void do_one_simulation_step(void)
 
 		glutSetWindow(mainWindow);
 		display();
-		//glutSetWindow(barColorSelected);
-		//display1();
-		//glutSetWindow(textbarWindow);
-		//displayText();
+		glutSetWindow(barColorSelected);
+		display1();
+		glutSetWindow(textbarWindow);
+		displayText();
 	}
 }
 
