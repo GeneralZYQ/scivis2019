@@ -30,6 +30,7 @@ const int COLOR_RAINBOW=1;
 const int COLOR_BANDS=2;
 int   scalar_col = 0;           //method for scalar coloring
 int   frozen = 0;               //toggles on/off the animation
+int barColorSelected = 0;
 
 int mainWindow, colorbarWindow, textbarWindow;
 
@@ -472,25 +473,55 @@ void displayText(void) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	//gluLookAt(2, 2, 2, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-	glScalef(.005, .005, .005);
+	glScalef(.0025, .0025, .0025);
 	glRotatef(0, 0, 1, 0);
 	glRotatef(0, 0, 0, 1);
 	glRotatef(0, 1, 0, 0);
-	glTranslatef(-300, 0, 0);
+	glTranslatef(-700, -60, 0);
 
 	glColor3f(1, 1, 1);
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'H');
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'e');
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'l');
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'l');
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'o');
 
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'W');
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'o');
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'r');
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'l');
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, 'd');
-	glutStrokeCharacter(GLUT_STROKE_ROMAN, '!');
+	printf("The dddx is %d", barColorSelected);
+
+	if (barColorSelected == 0)
+	{
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, '0');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+
+
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, '1');
+	}
+	else
+	{
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, '0');
+
+		float va = (barColorSelected / 500);
+		char buf[200];
+		gcvt(va, 6, buf);
+
+		for (size_t i = 0; i < 5; i++)
+		{
+			char cc = buf[i];
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, cc);
+
+		}
+
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, '1');
+
+	}
+	
+	
+	
 
 	glutSwapBuffers();
 }
@@ -556,6 +587,12 @@ void drag(int mx, int my)
 	lmx = mx; lmy = my;
 }
 
+void barClicked(int button, int state, int x, int y) {
+
+	barColorSelected = x;
+	//printf("The bar selecte is %d", barColorSelected);
+}
+
 //do_one_simulation_step: Do one complete cycle of the simulation:
 //      - set_forces:       
 //      - solve:            read forces from the user
@@ -594,7 +631,7 @@ int main(int argc, char **argv)
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowSize(500,670);
+	glutInitWindowSize(500,600);
 	mainWindow = glutCreateWindow("Real-time smoke simulation and visualization");
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
@@ -605,10 +642,10 @@ int main(int argc, char **argv)
 
 	colorbarWindow = glutCreateSubWindow(mainWindow, 0, 530, 500, 20);
 	glutDisplayFunc(display1);
+	glutMouseFunc(barClicked);
 
-	textbarWindow = glutCreateSubWindow(mainWindow, 0, 550, 500, 120);
+	textbarWindow = glutCreateSubWindow(mainWindow, 0, 550, 500, 50);
 	glutDisplayFunc(displayText);
-
 	
 	init_simulation(DIM);	//initialize the simulation data structures	
 	glutMainLoop();			//calls do_one_simulation_step, keyboard, display, drag, reshape
