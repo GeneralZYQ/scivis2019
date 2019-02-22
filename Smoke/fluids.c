@@ -228,6 +228,12 @@ void set_colormap(float vy)
    float R,G,B; 
 
 
+   if (vy > 1)
+   {
+	   printf("vy is %d \n", vy);
+	   
+   }
+
    if (scalar_col == COLOR_BLACKWHITE)
 	   //R = G = B = vy;
 	   grayscale(vy, &R, &G, &B);
@@ -473,27 +479,18 @@ void displayText(void) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	//gluLookAt(2, 2, 2, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-	glScalef(.0025, .0025, .0025);
+	glScalef(.005, .007, .005);
 	glRotatef(0, 0, 1, 0);
 	glRotatef(0, 0, 0, 1);
 	glRotatef(0, 1, 0, 0);
-	glTranslatef(-700, -60, 0);
+	glTranslatef(-400, 0, 0);
 
 	glColor3f(1, 1, 1);
-
-	printf("The dddx is %d", barColorSelected);
 
 	if (barColorSelected == 0)
 	{
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, '0');
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
-		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
-		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
-		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
-		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
-		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
-
-
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
@@ -505,7 +502,7 @@ void displayText(void) {
 	{
 		glutStrokeCharacter(GLUT_STROKE_ROMAN, '0');
 
-		float va = (barColorSelected / 500);
+		float va = ((float)barColorSelected / 500.0);
 		char buf[200];
 		gcvt(va, 6, buf);
 
@@ -585,6 +582,7 @@ void drag(int mx, int my)
 	fy[Y * DIM + X] += dy;
 	rho[Y * DIM + X] = 10.0f;
 	lmx = mx; lmy = my;
+	barColorSelected = 0;
 }
 
 void barClicked(int button, int state, int x, int y) {
@@ -607,8 +605,12 @@ void do_one_simulation_step(void)
 		diffuse_matter(DIM, vx, vy, rho, rho0, dt);
 		glutPostRedisplay();
 
+		glutSetWindow(mainWindow);
 		display();
-		display1();
+		//glutSetWindow(barColorSelected);
+		//display1();
+		//glutSetWindow(textbarWindow);
+		//displayText();
 	}
 }
 
