@@ -2,10 +2,13 @@
 //        the velocity field at the mouse location. Press the indicated keys to change options
 //-------------------------------------------------------------------------------------------------- 
 
+
+
 #include <rfftw.h>              //the numerical simulation FFTW library
 #include <GL/glut.h>            //the GLUT graphics library
 #include <stdio.h>              //for printing the help text
 #include <math.h>
+#include "hsvargb.h"
 
 
 //--- SIMULATION PARAMETERS ------------------------------------------------------------------------
@@ -25,6 +28,7 @@ int   color_dir = 0;            //use direction color-coding or not
 float vec_scale = 1000;			//scaling of hedgehogs
 int   draw_smoke = 0;           //draw the smoke or not
 int   draw_vecs = 1;            //draw the vector field or not
+int   draw_divergence = 0;      //draw the divergence of grids
 const int COLOR_BLACKWHITE=0;   //different types of color mapping: black-and-white, rainbow, banded
 const int COLOR_RAINBOW=1;
 const int COLOR_BANDS=2;
@@ -55,6 +59,7 @@ void init_simulation(int n)
 	rho0    = (fftw_real*) malloc(dim);
 	plan_rc = rfftw2d_create_plan(n, n, FFTW_REAL_TO_COMPLEX, FFTW_IN_PLACE);
 	plan_cr = rfftw2d_create_plan(n, n, FFTW_COMPLEX_TO_REAL, FFTW_IN_PLACE);
+	scalar_col = COLOR_RAINBOW;
 
 	rainbowColors = (float *)malloc(256);
 	grayColors = (float *)malloc(256);
@@ -200,19 +205,17 @@ void rainbow(float value,float* R,float* G,float* B)
    *R = max(0.0,(3-fabs(fValue -4)-fabs(fValue -5))/2);
    *G = max(0.0,(4-fabs(fValue -2)-fabs(fValue -4))/2);
    *B = max(0.0,(3-fabs(fValue -1)-fabs(fValue -2))/2);
+
+   float h, s, v;
+   rgb2hsv(0.7, 0.7, 0.3, &h, &s, &v);
 }
 
 void grayscale(float value, float *R, float *G, float *B) {
 	const float dx = 0.8;
-	if (value < 0) value = 0; if (value > 1) value = 1;
+	if (value < 0) value = 0.001; if (value > 1) value = 0.999;
 
 	float raw = floorf(value * 256.0);
 	float fValue = raw / 256.0;
-
-	fValue = (6 - 2 * dx)*fValue + dx;
-	float preR = max(0.0, (3 - fabs(fValue - 4) - fabs(fValue - 5)) / 2);
-	float preG = max(0.0, (4 - fabs(fValue - 2) - fabs(fValue - 4)) / 2);
-	float preB = max(0.0, (3 - fabs(fValue - 1) - fabs(fValue - 2)) / 2);
 
 	// 0.2126R + 0.7152G + 0.0722B
 	/*
@@ -220,9 +223,9 @@ void grayscale(float value, float *R, float *G, float *B) {
 	*G = 0.2126 * preR + 0.7152 * preG + 0.0722 * preB;
 	*R = 0.2126 * preR + 0.7152 * preG + 0.0722 * preB;
 	*/
-	*R = (preR + preG + preB) / 3.0;
-	*G = (preR + preG + preB) / 3.0;
-	*B = (preR + preG + preB) / 3.0;
+	*R = fValue;
+	*G = fValue;
+	*B = fValue;
 }
 
 void yellowToBlue(float value, float *R, float *G, float *B) {
@@ -231,7 +234,7 @@ void yellowToBlue(float value, float *R, float *G, float *B) {
 	static float color[2][3] = { {0,0,1}, {1,1,0} };
 	int idx1, idx2;
 	float fracBetween = 0;
-	if (value < 0) value = 0.001; if (value > 1) value = 0.999;
+	if (value < 0) value = 0.001; if (value >= 1) value = 0.999;
 
 	idx1 = floor(value);
 	idx2 = idx1 + 1;
@@ -251,11 +254,16 @@ void set_colormap(float vy)
 {
    float R,G,B; 
 
-   if (scalar_col == COLOR_BLACKWHITE)
+   if (scalar_col == COLOR_BLACKWHITE) {
 	   //R = G = B = vy;
 	   grayscale(vy, &R, &G, &B);
-   else if (scalar_col==COLOR_RAINBOW)
-       rainbow(vy,&R,&G,&B); 
+   }
+	   
+   else if (scalar_col == COLOR_RAINBOW) {
+	   rainbow(vy, &R, &G, &B);
+	   //printf("r %f g %f b %f", R, G, B);
+   }
+       
    else if (scalar_col==COLOR_BANDS)
        {  
 
@@ -294,9 +302,100 @@ void direction_to_color(float x, float y, int method)
 	glColor3f(r,g,b);
 }
 
+void getDivergenceAtIndex(int idx0, float *fValue) {
+
+	fftw_real vxcurrent0 = vx[idx0];
+	fftw_real vycurrent0 = vy[idx0];
+
+	fftw_real vxprevious0 = vx0[idx0];
+	fftw_real vyprevious0 = vy0[idx0];
+
+	fftw_real divx0 = vxcurrent0 - vxprevious0;
+	fftw_real divy0 = vycurrent0 - vyprevious0;
+
+	fftw_real div0 = divx0 + divy0;
+
+	if (div0 < -20.0)
+	{
+		div0 = -20.0;
+	}
+	else if (div0 > 20.0)
+	{
+		div0 = 20.0;
+	}
+
+	*fValue = (div0 + 20.0) / 40.0;
+}
+
+/*
+void gridDivergence(void) { // draw the divergence of the grids
+
+	int        i, j, idx;
+	fftw_real  wn = (fftw_real)winWidth / (fftw_real)(DIM + 1);   // Grid cell width
+	fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
+
+
+	int idx0, idx1, idx2, idx3;
+	double px0, py0, px1, py1, px2, py2, px3, py3;
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glBegin(GL_TRIANGLES);
+
+	for (i = 0; i < DIM; i++)
+	{
+		for (j = 0; j < DIM; j++)
+		{
+
+			px0 = wn + (fftw_real)i * wn;
+			py0 = hn + (fftw_real)j * hn;
+			idx0 = (j * DIM) + i;
+			float fValue0;
+			getDivergenceAtIndex(idx0, &fValue0);
+			
+
+			px1 = wn + (fftw_real)i * wn;
+			py1 = hn + (fftw_real)(j + 1) * hn;
+			idx1 = ((j + 1) * DIM) + i;
+			float fValue1;
+			getDivergenceAtIndex(idx1, &fValue1);
+
+
+			px2 = wn + (fftw_real)(i + 1) * wn;
+			py2 = hn + (fftw_real)(j + 1) * hn;
+			idx2 = ((j + 1) * DIM) + (i + 1);
+			float fValue2;
+			getDivergenceAtIndex(idx2, &fValue2);
+
+
+			px3 = wn + (fftw_real)(i + 1) * wn;
+			py3 = hn + (fftw_real)j * hn;
+			idx3 = (j * DIM) + (i + 1);
+			float fValue3;
+			getDivergenceAtIndex(idx3, &fValue3);
+
+
+			//printf("the fvalue is %f  %f \n", fValue0, fValue1);
+			set_colormap(fValue0);    glVertex2f(px0, py0);
+			set_colormap(fValue1);    glVertex2f(px1, py1);
+			set_colormap(fValue2);    glVertex2f(px1, py2);
+
+			set_colormap(fValue0);    glVertex2f(px1, py0);
+			set_colormap(fValue2);    glVertex2f(px1, py2);
+			set_colormap(fValue3);    glVertex2f(px1, py3);
+		}
+	}
+
+	glEnd();
+}
+
+*/
+
 //visualize: This is the main visualization function
 void visualize(void)
 {
+
+	/*
+	*/
 	int        i, j, idx;
 	fftw_real  wn = (fftw_real)winWidth / (fftw_real)(DIM + 1);   // Grid cell width
 	fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
@@ -343,6 +442,63 @@ void visualize(void)
 		}
 		glEnd();
 	}
+	else
+	{
+		if (draw_divergence)
+		{
+			int idx0, idx1, idx2, idx3;
+			double px0, py0, px1, py1, px2, py2, px3, py3;
+
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glBegin(GL_TRIANGLES);
+
+			for (j = 0; j < DIM - 1; j++)
+			{
+				for (i = 0; i < DIM - 1; i++)
+				{
+
+					px0 = wn + (fftw_real)i * wn;
+					py0 = hn + (fftw_real)j * hn;
+					idx0 = (j * DIM) + i;
+					float fValue0;
+					getDivergenceAtIndex(idx0, &fValue0);
+
+
+					px1 = wn + (fftw_real)i * wn;
+					py1 = hn + (fftw_real)(j + 1) * hn;
+					idx1 = ((j + 1) * DIM) + i;
+					float fValue1;
+					getDivergenceAtIndex(idx1, &fValue1);
+
+
+					px2 = wn + (fftw_real)(i + 1) * wn;
+					py2 = hn + (fftw_real)(j + 1) * hn;
+					idx2 = ((j + 1) * DIM) + (i + 1);
+					float fValue2;
+					getDivergenceAtIndex(idx2, &fValue2);
+
+
+					px3 = wn + (fftw_real)(i + 1) * wn;
+					py3 = hn + (fftw_real)j * hn;
+					idx3 = (j * DIM) + (i + 1);
+					float fValue3;
+					getDivergenceAtIndex(idx3, &fValue3);
+
+
+					//printf("the fvalue is %f  %f \n", fValue0, fValue1);
+					set_colormap(fValue0);    glVertex2f(px0, py0);
+					set_colormap(fValue1);    glVertex2f(px1, py1);
+					set_colormap(fValue2);    glVertex2f(px2, py2);
+
+					set_colormap(fValue0);    glVertex2f(px0, py0);
+					set_colormap(fValue2);    glVertex2f(px2, py2);
+					set_colormap(fValue3);    glVertex2f(px3, py3);
+				}
+			}
+
+			glEnd();
+		}
+	}
 
 	if (draw_vecs)
 	{
@@ -371,6 +527,7 @@ void display(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	visualize(); 
+	//gridDivergence();
 	glFlush(); 
 	glutSwapBuffers();
 }
@@ -540,6 +697,11 @@ void displayText(void) {
 	glutSwapBuffers();
 }
 
+
+// Draw the content of divergence.
+
+
+
 //reshape: Handle window resizing (reshaping) events
 void reshape(int w, int h) 
 {
@@ -568,6 +730,9 @@ void keyboard(unsigned char key, int x, int y)
 		    if (draw_vecs==0) draw_smoke = 1; break;
 	  case 'm': scalar_col++; if (scalar_col>COLOR_BANDS) scalar_col=COLOR_BLACKWHITE; break;
 	  case 'a': frozen = 1-frozen; break;
+	  case 'b': draw_divergence = draw_divergence + 1;
+		  draw_divergence = draw_divergence % 2;
+		  if (draw_divergence < 0) draw_divergence = 1; break;
 	  case 'q': exit(0);
 	}
 }
@@ -646,6 +811,7 @@ int main(int argc, char **argv)
 	printf("y:     toggle drawing hedgehogs on/off\n");
 	printf("m:     toggle thru scalar coloring\n");
 	printf("a:     toggle the animation on/off\n");
+	printf("b:     toggle the divergence on/off\n");
 	printf("q:     quit\n\n");
 
 	glutInit(&argc, argv);
