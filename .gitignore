@@ -18,3 +18,10 @@ QtGuiApplication1WTF/.vs/QtGuiApplication1WTF/v15/.suo
 QtGuiApplication1WTF/QtGuiApplication1WTF/FFTW/Release/fhf_32.obj
 *.tlog
 *.obj
+*.obj
+*.tlog
+*.db-shm
+*.obj
+QtGuiApplication1WTF/QtGuiApplication1WTF/FFTW/Release/fcr_9.obj
+*.obj
+*.obj
