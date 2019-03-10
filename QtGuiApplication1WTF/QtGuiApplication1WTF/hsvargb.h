@@ -4,7 +4,7 @@
 #include <math.h>
 //void rgb2hsv(float r, float g, float b, float *h, float *s, float *v);
 
-void rgb2hsv(float r, float g, float b, float *h, float *s, float *v) {
+inline void rgb2hsv(float r, float g, float b, float *h, float *s, float *v) {
 	float M = fmax(r, fmax(g, b));
 	float m = fmin(r, fmin(g, b));
 
@@ -35,7 +35,7 @@ void rgb2hsv(float r, float g, float b, float *h, float *s, float *v) {
 	}
 }
 
-void hsv2rgb(float h, float s, float v, float *r, float *g, float *b) {
+inline void hsv2rgb(float h, float s, float v, float *r, float *g, float *b) {
 
 	int hueCase = (int)(h * 6);
 	float frac = 6 * h - hueCase;

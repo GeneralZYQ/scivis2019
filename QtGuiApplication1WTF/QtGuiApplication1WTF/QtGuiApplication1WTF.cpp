@@ -1,6 +1,5 @@
 #include "QtGuiApplication1WTF.h"
 #include <sstream>
-#include "hsvargb.h"
 #include <math.h>
 #include <gl/GLU.h>
 #include <gl/GL.h>
@@ -198,6 +197,7 @@ void QtGuiApplication1WTF::setSValue(int s) {
 	}
 
 	saturationbias = float(s - 50) / 100.0;
+
 	drawBar();
 }
 
