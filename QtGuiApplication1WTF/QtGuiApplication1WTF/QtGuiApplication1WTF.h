@@ -27,6 +27,8 @@ public slots:
 	void color64toggled();
 	void color32toggled();
 	void fluidsDragged(int posx);
+	void showSmoke();
+	void hideSmoke();
 
 	void drawBar();
 

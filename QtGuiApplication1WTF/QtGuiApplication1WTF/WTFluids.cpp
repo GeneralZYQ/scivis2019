@@ -47,6 +47,10 @@ WTFluids::WTFluids(QWidget *parent)
 	emit xRotationChanged(400);
 }
 
+void WTFluids::setShowSmoke(int show) {
+	draw_smoke = show;
+}
+
 
 void WTFluids::setXRotation(int angle)
 {

@@ -54,11 +54,13 @@ public:
     QLabel *label_9;
     QLabel *label_10;
     QLabel *label_11;
+    QPushButton *showSmokeButton;
+    QPushButton *hideSmokeButton;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
-    QButtonGroup *buttonGroup;
     QButtonGroup *buttonGroup_2;
+    QButtonGroup *buttonGroup;
 
     void setupUi(QMainWindow *QtGuiApplication1WTFClass)
     {
@@ -166,6 +168,12 @@ public:
         label_11 = new QLabel(centralWidget);
         label_11->setObjectName(QString::fromUtf8("label_11"));
         label_11->setGeometry(QRect(720, 260, 47, 13));
+        showSmokeButton = new QPushButton(centralWidget);
+        showSmokeButton->setObjectName(QString::fromUtf8("showSmokeButton"));
+        showSmokeButton->setGeometry(QRect(590, 290, 75, 23));
+        hideSmokeButton = new QPushButton(centralWidget);
+        hideSmokeButton->setObjectName(QString::fromUtf8("hideSmokeButton"));
+        hideSmokeButton->setGeometry(QRect(670, 290, 75, 23));
         QtGuiApplication1WTFClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(QtGuiApplication1WTFClass);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
@@ -206,6 +214,8 @@ public:
         label_9->setText(QApplication::translate("QtGuiApplication1WTFClass", "+0.5", nullptr));
         label_10->setText(QApplication::translate("QtGuiApplication1WTFClass", " - 0.5", nullptr));
         label_11->setText(QApplication::translate("QtGuiApplication1WTFClass", "+0.5", nullptr));
+        showSmokeButton->setText(QApplication::translate("QtGuiApplication1WTFClass", "show smoke", nullptr));
+        hideSmokeButton->setText(QApplication::translate("QtGuiApplication1WTFClass", "hide smoke", nullptr));
     } // retranslateUi
 
 };

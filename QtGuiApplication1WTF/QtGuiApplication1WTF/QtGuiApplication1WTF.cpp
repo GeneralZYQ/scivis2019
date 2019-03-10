@@ -38,6 +38,9 @@ QtGuiApplication1WTF::QtGuiApplication1WTF(QWidget *parent)
 	ui.horizontalSlider_S->setValue(50);
 	ui.horizontalSlider_V->setValue(50);
 
+	connect(ui.showSmokeButton, SIGNAL(clicked()), this, SLOT(showSmoke()));
+	connect(ui.hideSmokeButton, SIGNAL(clicked()), this, SLOT(showSmoke()));
+
 	blocks = new QWidget[256];
 
 	drawBar();
@@ -223,6 +226,16 @@ void QtGuiApplication1WTF::setVValue(int v) {
 	vbias = float(v - 50) / 100.0;
 	drawBar();
 }
+
+void QtGuiApplication1WTF::showSmoke() {
+	fluids->setShowSmoke(1);
+}
+
+void QtGuiApplication1WTF::hideSmoke(){
+	fluids->setShowSmoke(0);
+}
+
+
 
 std::string QtGuiApplication1WTF::FConvertS(float number)
 {

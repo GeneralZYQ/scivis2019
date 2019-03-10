@@ -13,6 +13,7 @@ class WTFluids: public QGLWidget
 public:
 	WTFluids(QWidget *parent = 0);
 	float huebias, saturationbias, vbias;
+	void setShowSmoke(int show);
 
 
 public slots:

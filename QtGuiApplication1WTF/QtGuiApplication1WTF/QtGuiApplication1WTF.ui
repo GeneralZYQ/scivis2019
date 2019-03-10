@@ -376,6 +376,32 @@
      <string>+0.5</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="showSmokeButton">
+    <property name="geometry">
+     <rect>
+      <x>590</x>
+      <y>290</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>show smoke</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="hideSmokeButton">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>290</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>hide smoke</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
