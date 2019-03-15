@@ -95,9 +95,11 @@
   <ItemGroup>
     <ClCompile Include="..\fluids.c" />
     <ClCompile Include="..\hsvargb.cpp" />
+    <ClCompile Include="WTPartialDerivate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\hsvargb.h" />
+    <ClInclude Include="WTPartialDerivate.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

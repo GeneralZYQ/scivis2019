@@ -9,6 +9,7 @@
 #include <stdio.h>              //for printing the help text
 #include <math.h>
 #include "hsvargb.h"
+//#include "WTPartialDerivate.cpp"
 
 
 //--- SIMULATION PARAMETERS ------------------------------------------------------------------------
@@ -38,7 +39,8 @@ int barColorSelected = 0;
 
 int mainWindow, colorbarWindow, textbarWindow;
 
-float hbias, sbias, vbias;
+float hbias, sbias, vbias; // The bias each should between -0.5 to 0.5;
+int colorNumbers;
 
 //------ SIMULATION CODE STARTS HERE -----------------------------------------------------------------
 
@@ -69,6 +71,7 @@ void init_simulation(int n)
 	hbias = 0,0;
 	sbias = 0,0;
 	vbias = 0.0;
+	colorNumbers = 256;
 
 	for (size_t i = 0; i < 256; i++)
 	{
@@ -196,6 +199,16 @@ void set_forces(void)
 
 //------ VISUALIZATION CODE STARTS HERE -----------------------------------------------------------------
 
+// Using this function we can get the partial derivative of a cell.
+void calculatePartialDerivate(float v1, float v2, float v3, float v4, float width, float height, float *rhox, float *rhoy) {
+
+	float r = 0.5;
+	float s = 0.5;
+
+	*rhox = ((v2 - v1) * r) / width + (v3 - v4) * (1 - r) / width;
+	*rhoy = (v3 - v2) * s / height + (v4 - v1) * (1 - s) / height;
+}
+
 
 //rainbow: Implements a color palette, mapping the scalar 'value' to a rainbow color RGB
 void rainbow(float value,float* R,float* G,float* B)
@@ -205,6 +218,15 @@ void rainbow(float value,float* R,float* G,float* B)
 
    float raw = floorf(value * 256.0);
    float fValue = raw / 256.0;
+
+
+   for (float i = 1.0; i >= 0.0; i -= 1.0 / (float)colorNumbers)
+   {
+	   if ((fValue - i) > 0)
+	   {
+		   fValue = i;
+	   }
+   }
 
    fValue = (6-2*dx)*fValue+dx;
    *R = max(0.0,(3-fabs(fValue -4)-fabs(fValue -5))/2);
@@ -220,6 +242,14 @@ void biasRainbow(float value, float huebias, float saturationbias, float vbias, 
 
 	float raw = floorf(value * 256.0);
 	float fValue = raw / 256.0;
+
+	for (float i = 1.0; i >= 0.0; i -= 1.0 / (float)colorNumbers)
+	{
+		if ((fValue - i) > 0)
+		{
+			fValue = i;
+		}
+	}
 
 	fValue = (6 - 2 * dx)*fValue + dx;
 
@@ -253,6 +283,14 @@ void grayscale(float value, float *R, float *G, float *B) {
 	float raw = floorf(value * 256.0);
 	float fValue = raw / 256.0;
 
+	for (float i = 1.0; i >= 0.0; i -= 1.0 / (float)colorNumbers)
+	{
+		if ((fValue - i) > 0)
+		{
+			fValue = i;
+		}
+	}
+
 	// 0.2126R + 0.7152G + 0.0722B
 	/*
 	*R = 0.2126 * preR + 0.7152 * preG + 0.0722 * preB;
@@ -277,6 +315,14 @@ void yellowToBlue(float value, float *R, float *G, float *B) {
 
 	float raw = floorf(value * 256.0);
 	float fValue = raw / 256.0;
+
+	for (float i = 1.0; i >= 0.0; i -= 1.0 / (float)colorNumbers)
+	{
+		if ((fValue - i) > 0)
+		{
+			fValue = i;
+		}
+	}
 
 	fracBetween = fValue;
 
