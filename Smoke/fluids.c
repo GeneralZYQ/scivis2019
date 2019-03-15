@@ -38,6 +38,8 @@ int barColorSelected = 0;
 
 int mainWindow, colorbarWindow, textbarWindow;
 
+float hbias, sbias, vbias;
+
 //------ SIMULATION CODE STARTS HERE -----------------------------------------------------------------
 
 //init_simulation: Initialize simulation data structures as a function of the grid size 'n'. 
@@ -64,6 +66,9 @@ void init_simulation(int n)
 	rainbowColors = (float *)malloc(256);
 	grayColors = (float *)malloc(256);
 	byColors = (float *)malloc(256);
+	hbias = 0,0;
+	sbias = 0,0;
+	vbias = 0.0;
 
 	for (size_t i = 0; i < 256; i++)
 	{
@@ -207,7 +212,38 @@ void rainbow(float value,float* R,float* G,float* B)
    *B = max(0.0,(3-fabs(fValue -1)-fabs(fValue -2))/2);
 
    float h, s, v;
-   rgb2hsv(0.7, 0.7, 0.3, &h, &s, &v);
+}
+
+void biasRainbow(float value, float huebias, float saturationbias, float vbias, float* R, float* G, float* B) {
+	const float dx = 0.8;
+	if (value < 0) value = 0; if (value > 1) value = 1;
+
+	float raw = floorf(value * 256.0);
+	float fValue = raw / 256.0;
+
+	fValue = (6 - 2 * dx)*fValue + dx;
+
+
+	float preR = fmax(0.0, (3 - fabs(fValue - 4) - fabs(fValue - 5)) / 2);
+	float preG = fmax(0.0, (4 - fabs(fValue - 2) - fabs(fValue - 4)) / 2);
+	float preB = fmax(0.0, (3 - fabs(fValue - 1) - fabs(fValue - 2)) / 2);
+
+	float h, s, v;
+
+	rgb2hsv(preR, preG, preB, &h, &s, &v);
+
+	h += huebias;
+	s += saturationbias;
+	v += vbias;
+
+
+	float fR, fG, fB;
+
+	hsv2rgb(h, s, v, &fR, &fG, &fB);
+
+	*R = fR;
+	*G = fG;
+	*B = fB;
 }
 
 void grayscale(float value, float *R, float *G, float *B) {
