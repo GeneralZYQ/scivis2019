@@ -69,8 +69,8 @@ void init_simulation(int n)
 	rainbowColors = (float *)malloc(256);
 	grayColors = (float *)malloc(256);
 	byColors = (float *)malloc(256);
-	hbias = 0,0;
-	sbias = 0,0;
+	hbias = 0.0;
+	sbias = 0.0;
 	vbias = 0.0;
 	colorNumbers = 256;
 
@@ -240,7 +240,7 @@ void rainbow(float value,float* R,float* G,float* B)
 void biasRainbow(float value, float huebias, float saturationbias, float vbias, float* R, float* G, float* B) {
 
 
-	value = value / 3.0;
+	value = value / 2.0;
 
 	const float dx = 0.8;
 	if (value < 0) value = 0; if (value > 1) value = 1;
