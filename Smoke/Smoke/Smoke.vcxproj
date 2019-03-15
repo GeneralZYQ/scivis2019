@@ -98,6 +98,7 @@
     <ClCompile Include="WTPartialDerivate.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\divergenceAxis.h" />
     <ClInclude Include="..\hsvargb.h" />
     <ClInclude Include="WTPartialDerivate.h" />
   </ItemGroup>

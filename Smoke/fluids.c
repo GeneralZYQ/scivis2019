@@ -9,6 +9,7 @@
 #include <stdio.h>              //for printing the help text
 #include <math.h>
 #include "hsvargb.h"
+#include "divergenceAxis.h"
 //#include "WTPartialDerivate.cpp"
 
 
@@ -237,19 +238,18 @@ void rainbow(float value,float* R,float* G,float* B)
 }
 
 void biasRainbow(float value, float huebias, float saturationbias, float vbias, float* R, float* G, float* B) {
+
+
+	value = value / 3.0;
+
 	const float dx = 0.8;
 	if (value < 0) value = 0; if (value > 1) value = 1;
+	float fValue = value;
 
-	float raw = floorf(value * 256.0);
-	float fValue = raw / 256.0;
-
-	for (float i = 1.0; i >= 0.0; i -= 1.0 / (float)colorNumbers)
-	{
-		if ((fValue - i) > 0)
-		{
-			fValue = i;
-		}
-	}
+	int numberth = fValue * 256;
+	fValue = (float)numberth * (1.0 / 256.0);
+	
+	//printf("the fvalue is %s \n", fValue);
 
 	fValue = (6 - 2 * dx)*fValue + dx;
 
@@ -277,19 +277,15 @@ void biasRainbow(float value, float huebias, float saturationbias, float vbias, 
 }
 
 void grayscale(float value, float *R, float *G, float *B) {
+
+	value = value / 3.0;
 	const float dx = 0.8;
 	if (value < 0) value = 0.001; if (value > 1) value = 0.999;
 
-	float raw = floorf(value * 256.0);
-	float fValue = raw / 256.0;
+	float fValue = value;
 
-	for (float i = 1.0; i >= 0.0; i -= 1.0 / (float)colorNumbers)
-	{
-		if ((fValue - i) > 0)
-		{
-			fValue = i;
-		}
-	}
+	int numberth = fValue * 256;
+	fValue = (float)numberth * (1.0 / 256.0);
 
 	// 0.2126R + 0.7152G + 0.0722B
 	/*
@@ -304,6 +300,7 @@ void grayscale(float value, float *R, float *G, float *B) {
 
 void yellowToBlue(float value, float *R, float *G, float *B) {
 	
+	value = value / 3.0;
 	const int color_number = 2;
 	static float color[2][3] = { {0,0,1}, {1,1,0} };
 	int idx1, idx2;
@@ -313,16 +310,10 @@ void yellowToBlue(float value, float *R, float *G, float *B) {
 	idx1 = floor(value);
 	idx2 = idx1 + 1;
 
-	float raw = floorf(value * 256.0);
-	float fValue = raw / 256.0;
+	float fValue = value;
 
-	for (float i = 1.0; i >= 0.0; i -= 1.0 / (float)colorNumbers)
-	{
-		if ((fValue - i) > 0)
-		{
-			fValue = i;
-		}
-	}
+	int numberth = fValue * 256;
+	fValue = (float)numberth * (1.0 / 256.0);
 
 	fracBetween = fValue;
 
@@ -342,8 +333,8 @@ void set_colormap(float vy)
    }
 	   
    else if (scalar_col == COLOR_RAINBOW) {
-	   rainbow(vy, &R, &G, &B);
-	   //printf("r %f g %f b %f", R, G, B);
+	   //rainbow(vy, &R, &G, &B);
+	   biasRainbow(vy, hbias, sbias, vbias, &R, &G, &B);
    }
        
    else if (scalar_col==COLOR_BANDS)
@@ -511,7 +502,6 @@ void visualize(void)
 				py3 = hn + (fftw_real)j * hn;
 				idx3 = (j * DIM) + (i + 1);
 
-				printf("the fvalue is %f  %f \n", px0, px1);
 				set_colormap(rho[idx0]);    glVertex2f(px0, py0);
 				set_colormap(rho[idx1]);    glVertex2f(px1, py1);
 				set_colormap(rho[idx2]);    glVertex2f(px2, py2);

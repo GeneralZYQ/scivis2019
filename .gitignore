@@ -25,3 +25,11 @@ QtGuiApplication1WTF/QtGuiApplication1WTF/FFTW/Release/fhf_32.obj
 QtGuiApplication1WTF/QtGuiApplication1WTF/FFTW/Release/fcr_9.obj
 *.obj
 *.obj
+QtGuiApplication1WTF/QtGuiApplication1WTF/Debug/QtGuiApplication1WTF.log
+QtGuiApplication1WTF/QtGuiApplication1WTF/FFTW/Debug/FFTW.idb
+*.log
+*.obj
+*.obj
+*.obj
+*.log
+*.obj
