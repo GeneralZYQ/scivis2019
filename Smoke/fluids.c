@@ -429,7 +429,7 @@ void visualize(void)
 				py3 = hn + (fftw_real)j * hn;
 				idx3 = (j * DIM) + (i + 1);
 
-
+				printf("the fvalue is %f  %f \n", px0, px1);
 				set_colormap(rho[idx0]);    glVertex2f(px0, py0);
 				set_colormap(rho[idx1]);    glVertex2f(px1, py1);
 				set_colormap(rho[idx2]);    glVertex2f(px2, py2);
@@ -485,7 +485,7 @@ void visualize(void)
 					getDivergenceAtIndex(idx3, &fValue3);
 
 
-					//printf("the fvalue is %f  %f \n", fValue0, fValue1);
+					
 					set_colormap(fValue0);    glVertex2f(px0, py0);
 					set_colormap(fValue1);    glVertex2f(px1, py1);
 					set_colormap(fValue2);    glVertex2f(px2, py2);
@@ -520,7 +520,7 @@ void visualize(void)
 
 //------ INTERACTION CODE STARTS HERE -----------------------------------------------------------------
 
-//display: Handle window redrawing events. Simply delegates to visualize().
+//display: Handle window redrawing events. Simply dwinWidthelegates to visualize().
 void display(void) 
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
