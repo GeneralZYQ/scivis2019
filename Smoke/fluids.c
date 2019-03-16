@@ -30,7 +30,11 @@ int   color_dir = 0;            //use direction color-coding or not
 float vec_scale = 1000;			//scaling of hedgehogs
 int   draw_smoke = 0;           //draw the smoke or not
 int   draw_vecs = 1;            //draw the vector field or not
+
+const int DRAW_DIV_VELOCITY = 1; // draw the divergence of velocity
+const int DRAW_DIV_FORCE = 2;   // draw the divergence of force
 int   draw_divergence = 0;      //draw the divergence of grids
+
 const int COLOR_BLACKWHITE=0;   //different types of color mapping: black-and-white, rainbow, banded
 const int COLOR_RAINBOW=1;
 const int COLOR_BANDS=2;
@@ -425,7 +429,7 @@ void visualize(void)
 	}
 	else
 	{
-		if (draw_divergence)
+		if (draw_divergence > 0)
 		{
 			int idx0, idx1, idx2, idx3;
 			double px0, py0, px1, py1, px2, py2, px3, py3;
@@ -454,24 +458,39 @@ void visualize(void)
 					py3 = hn + (fftw_real)j * hn;
 					idx3 = (j * DIM) + (i + 1);
 
-					double pxh = (px1 + px2) / 2;
-					double pyh = py1;
+					if (draw_divergence == DRAW_DIV_VELOCITY) {
+						float div = 0;
+						divInCell(vx[idx0], vy[idx0], vx[idx1], vy[idx1], vx[idx2], vy[idx2], vx[idx3], vy[idx3], wn, hn, &div);
 
-					float div = 0;
-					divInCell(vx[idx0], vy[idx0], vx[idx1], vy[idx1], vx[idx2], vy[idx2], vx[idx3], vy[idx3], wn, hn, &div);
+						//printf("The div is %f \n", div);
+						div = div * 10000;
+						div = div + 0.5;
 
-					//printf("The div is %f \n", div);
-					div = div * 10000;
-					div = div + 0.5;
-					
-					float fvx = vx[idx0] + vx[idx1] + vx[idx2] + vx[idx3];
-					float fvy = vy[idx0] + vy[idx1] + vy[idx2] + vy[idx3];
-					float fx1, fy1, fx2, fy2, fx3, fy3;
-					getCorrectCoordinates(px0, py0, hn, wn, fvx, fvy, &fx1, &fy1, &fx2, &fy2, &fx3, &fy3);
+						float fvx = vx[idx0] + vx[idx1] + vx[idx2] + vx[idx3];
+						float fvy = vy[idx0] + vy[idx1] + vy[idx2] + vy[idx3];
+						float fx1, fy1, fx2, fy2, fx3, fy3;
+						getCorrectCoordinates(px0, py0, hn, wn, fvx, fvy, &fx1, &fy1, &fx2, &fy2, &fx3, &fy3);
 
-					set_colormap(div);    glVertex2f(fx1, fy1);
-					set_colormap(div);    glVertex2f(fx2, fy2);
-					set_colormap(div);    glVertex2f(fx3, fy3);					
+						set_colormap(div);    glVertex2f(fx1, fy1);
+						set_colormap(div);    glVertex2f(fx2, fy2);
+						set_colormap(div);    glVertex2f(fx3, fy3);
+
+					} else if (draw_divergence == DRAW_DIV_FORCE) {
+						float div = 0;
+						divInCell(fx[idx0], fy[idx0], fx[idx1], fy[idx1], fx[idx2], fy[idx2], fx[idx3], fy[idx3], wn, hn, &div);
+
+						if (fx[idx0] > 0 || fx[idx1] > 0 || fx[idx2] > 0 || fx[idx3] > 0) 
+						{
+							printf("======================\n");
+							printf("The div is %f \n", div);
+							printf("The fx 0 is %f \n", fx[idx0]);
+							printf("The fx 1 is %f \n", fx[idx1]);
+							printf("The fx 2 is %f \n", fx[idx2]);
+							printf("The fx 3 is %f \n", fx[idx3]);
+							printf("======================\n");
+						}
+						
+					}
 				}
 			}
 
@@ -710,9 +729,7 @@ void keyboard(unsigned char key, int x, int y)
 		    if (draw_vecs==0) draw_smoke = 1; break;
 	  case 'm': scalar_col++; if (scalar_col>COLOR_BANDS) scalar_col=COLOR_BLACKWHITE; break;
 	  case 'a': frozen = 1-frozen; break;
-	  case 'b': draw_divergence = draw_divergence + 1;
-		  draw_divergence = draw_divergence % 2;
-		  if (draw_divergence < 0) draw_divergence = 1; break;
+	  case 'b': draw_divergence++; if (draw_divergence > 2) draw_divergence = 0; break;
 	  case 'q': exit(0);
 	}
 }
