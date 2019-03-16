@@ -466,9 +466,6 @@ void gridDivergence(void) { // draw the divergence of the grids
 //visualize: This is the main visualization function
 void visualize(void)
 {
-
-	/*
-	*/
 	int        i, j, idx;
 	fftw_real  wn = (fftw_real)winWidth / (fftw_real)(DIM + 1);   // Grid cell width
 	fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
@@ -556,15 +553,24 @@ void visualize(void)
 					float fValue3;
 					getDivergenceAtIndex(idx3, &fValue3);
 
+					double pxh = (px1 + px2) / 2;
+					double pyh = py1;
 
+					float div = 0;
+					divInCell(vx[idx0], vy[idx0], vx[idx1], vy[idx1], vx[idx2], vy[idx2], vx[idx3], vy[idx3], wn, hn, &div);
+
+					//printf("The div is %f \n", div);
+					div = div * 10000;
+					div = div + 0.5;
 					
-					set_colormap(fValue0);    glVertex2f(px0, py0);
-					set_colormap(fValue1);    glVertex2f(px1, py1);
-					set_colormap(fValue2);    glVertex2f(px2, py2);
+					float fvx = vx[idx0] + vx[idx1] + vx[idx2] + vx[idx3];
+					float fvy = vy[idx0] + vy[idx1] + vy[idx2] + vy[idx3];
+					float fx1, fy1, fx2, fy2, fx3, fy3;
+					getCorrectCoordinates(px0, py0, hn, wn, fvx, fvy, &fx1, &fy1, &fx2, &fy2, &fx3, &fy3);
 
-					set_colormap(fValue0);    glVertex2f(px0, py0);
-					set_colormap(fValue2);    glVertex2f(px2, py2);
-					set_colormap(fValue3);    glVertex2f(px3, py3);
+					set_colormap(div);    glVertex2f(fx1, fy1);
+					set_colormap(div);    glVertex2f(fx2, fy2);
+					set_colormap(div);    glVertex2f(fx3, fy3);					
 				}
 			}
 
@@ -583,6 +589,7 @@ void visualize(void)
 				glVertex2f(wn + (fftw_real)i * wn, hn + (fftw_real)j * hn);
 				glVertex2f((wn + (fftw_real)i * wn) + vec_scale * vx[idx], (hn + (fftw_real)j * hn) + vec_scale * vy[idx]);
 			}
+		
 		glEnd();
 	}
 }
