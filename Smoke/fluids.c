@@ -375,94 +375,6 @@ void direction_to_color(float x, float y, int method)
 	glColor3f(r,g,b);
 }
 
-void getDivergenceAtIndex(int idx0, float *fValue) {
-
-	fftw_real vxcurrent0 = vx[idx0];
-	fftw_real vycurrent0 = vy[idx0];
-
-	fftw_real vxprevious0 = vx0[idx0];
-	fftw_real vyprevious0 = vy0[idx0];
-
-	fftw_real divx0 = vxcurrent0 - vxprevious0;
-	fftw_real divy0 = vycurrent0 - vyprevious0;
-
-	fftw_real div0 = divx0 + divy0;
-
-	if (div0 < -20.0)
-	{
-		div0 = -20.0;
-	}
-	else if (div0 > 20.0)
-	{
-		div0 = 20.0;
-	}
-
-	*fValue = (div0 + 20.0) / 40.0;
-}
-
-/*
-void gridDivergence(void) { // draw the divergence of the grids
-
-	int        i, j, idx;
-	fftw_real  wn = (fftw_real)winWidth / (fftw_real)(DIM + 1);   // Grid cell width
-	fftw_real  hn = (fftw_real)winHeight / (fftw_real)(DIM + 1);  // Grid cell heigh
-
-
-	int idx0, idx1, idx2, idx3;
-	double px0, py0, px1, py1, px2, py2, px3, py3;
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glBegin(GL_TRIANGLES);
-
-	for (i = 0; i < DIM; i++)
-	{
-		for (j = 0; j < DIM; j++)
-		{
-
-			px0 = wn + (fftw_real)i * wn;
-			py0 = hn + (fftw_real)j * hn;
-			idx0 = (j * DIM) + i;
-			float fValue0;
-			getDivergenceAtIndex(idx0, &fValue0);
-			
-
-			px1 = wn + (fftw_real)i * wn;
-			py1 = hn + (fftw_real)(j + 1) * hn;
-			idx1 = ((j + 1) * DIM) + i;
-			float fValue1;
-			getDivergenceAtIndex(idx1, &fValue1);
-
-
-			px2 = wn + (fftw_real)(i + 1) * wn;
-			py2 = hn + (fftw_real)(j + 1) * hn;
-			idx2 = ((j + 1) * DIM) + (i + 1);
-			float fValue2;
-			getDivergenceAtIndex(idx2, &fValue2);
-
-
-			px3 = wn + (fftw_real)(i + 1) * wn;
-			py3 = hn + (fftw_real)j * hn;
-			idx3 = (j * DIM) + (i + 1);
-			float fValue3;
-			getDivergenceAtIndex(idx3, &fValue3);
-
-
-			//printf("the fvalue is %f  %f \n", fValue0, fValue1);
-			set_colormap(fValue0);    glVertex2f(px0, py0);
-			set_colormap(fValue1);    glVertex2f(px1, py1);
-			set_colormap(fValue2);    glVertex2f(px1, py2);
-
-			set_colormap(fValue0);    glVertex2f(px1, py0);
-			set_colormap(fValue2);    glVertex2f(px1, py2);
-			set_colormap(fValue3);    glVertex2f(px1, py3);
-		}
-	}
-
-	glEnd();
-}
-
-*/
-
 //visualize: This is the main visualization function
 void visualize(void)
 {
@@ -529,29 +441,18 @@ void visualize(void)
 					px0 = wn + (fftw_real)i * wn;
 					py0 = hn + (fftw_real)j * hn;
 					idx0 = (j * DIM) + i;
-					float fValue0;
-					getDivergenceAtIndex(idx0, &fValue0);
-
 
 					px1 = wn + (fftw_real)i * wn;
 					py1 = hn + (fftw_real)(j + 1) * hn;
 					idx1 = ((j + 1) * DIM) + i;
-					float fValue1;
-					getDivergenceAtIndex(idx1, &fValue1);
-
 
 					px2 = wn + (fftw_real)(i + 1) * wn;
 					py2 = hn + (fftw_real)(j + 1) * hn;
 					idx2 = ((j + 1) * DIM) + (i + 1);
-					float fValue2;
-					getDivergenceAtIndex(idx2, &fValue2);
-
 
 					px3 = wn + (fftw_real)(i + 1) * wn;
 					py3 = hn + (fftw_real)j * hn;
 					idx3 = (j * DIM) + (i + 1);
-					float fValue3;
-					getDivergenceAtIndex(idx3, &fValue3);
 
 					double pxh = (px1 + px2) / 2;
 					double pyh = py1;
