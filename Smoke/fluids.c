@@ -35,6 +35,10 @@ const int DRAW_DIV_VELOCITY = 1; // draw the divergence of velocity
 const int DRAW_DIV_FORCE = 2;   // draw the divergence of force
 int   draw_divergence = 0;      //draw the divergence of grids
 
+const int DRAW_ISOLINE_ONE = 1; // only draw one isoline
+const int DRAW_ISOLINE_N = 2; // draw many isolines
+int draw_isoline = 0; // dedicate if the app is going to draw isolines or isoline
+
 const int COLOR_BLACKWHITE=0;   //different types of color mapping: black-and-white, rainbow, banded
 const int COLOR_RAINBOW=1;
 const int COLOR_BANDS=2;
@@ -479,7 +483,8 @@ void visualize(void)
 						float div = 0;
 						divInCell(fx[idx0], fy[idx0], fx[idx1], fy[idx1], fx[idx2], fy[idx2], fx[idx3], fy[idx3], wn, hn, &div);
 
-						if (fx[idx0] > 0 || fx[idx1] > 0 || fx[idx2] > 0 || fx[idx3] > 0) 
+						/*
+						if (fx[idx0] > 0 || fx[idx1] > 0 || fx[idx2] > 0 || fx[idx3] > 0)
 						{
 							printf("======================\n");
 							printf("The div is %f \n", div);
@@ -489,7 +494,21 @@ void visualize(void)
 							printf("The fx 3 is %f \n", fx[idx3]);
 							printf("======================\n");
 						}
+						*/
+
 						
+						
+						div = div * 1000;
+						div = div + 0.5;
+
+						float fvx = fx[idx0] + fx[idx1] + fx[idx2] + fx[idx3];
+						float fvy = fy[idx0] + fy[idx1] + fy[idx2] + fy[idx3];
+						float fx1, fy1, fx2, fy2, fx3, fy3;
+						getCorrectCoordinates(px0, py0, hn, wn, fvx, fvy, &fx1, &fy1, &fx2, &fy2, &fx3, &fy3);
+
+						set_colormap(div);    glVertex2f(fx1, fy1);
+						set_colormap(div);    glVertex2f(fx2, fy2);
+						set_colormap(div);    glVertex2f(fx3, fy3);
 					}
 				}
 			}
