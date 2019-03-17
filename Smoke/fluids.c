@@ -10,6 +10,7 @@
 #include <math.h>
 #include "hsvargb.h"
 #include "divergenceAxis.h"
+#include "isolinesHelper.h"
 //#include "WTPartialDerivate.cpp"
 
 
