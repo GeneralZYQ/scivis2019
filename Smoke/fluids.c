@@ -539,6 +539,8 @@ void visualize(void)
 		int idx0, idx1, idx2, idx3;
 		double px0, py0, px1, py1, px2, py2, px3, py3;
 
+		isoline_value = 2.0;
+
 		glBegin(GL_LINES);
 		for (j = 0; j < DIM - 1; j++)
 		{
@@ -564,28 +566,24 @@ void visualize(void)
 
 				linePointsInCell(px0, py0, wn, hn, isoline_value, rho[idx0], rho[idx1], rho[idx2], rho[idx3], &sepx1, &sepy1, &sepx2, &sepy2, &sepx3, &sepy3, &sepx4, &sepy4);
 				
-
 				if (sepx1 > 0 && sepy1 > 0 && sepx2 > 0 && sepy2 > 0)
 				{
-					 
+					printf("find some one \n");
+
+					glColor3f(1.0, 0, 0.0);
+					glVertex2f(sepx1, sepy1);
+					glVertex2f(sepx2, sepy2);
 				}
 
 				if (sepx3 > 0 && sepy3 > 0 && sepx4 > 0 && sepy4 > 0)
 				{
-					 
+					glColor3f(1.0, 0, 0.0);
+					glVertex2f(sepx3, sepy3);
+					glVertex2f(sepx4, sepy4);
 				}
 				
 			}
 		}
-
-		glColor3f(0.5, 0.5, 0.5);
-		glVertex2f(10, 10);
-		glVertex2f(100, 100);
-
-		glColor3f(1.0, 0.0, 0.0);
-
-		glVertex2f(10, 100);
-		glVertex2f(100, 300);
 		glEnd();
 
 	}
