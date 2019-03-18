@@ -529,6 +529,9 @@ void visualize(void)
 
 		isoline_value = 1.0;
 
+		isoline_start_value = 1.0;
+		isoline_end_value = 2.0;
+		isoline_n = 4;
 
 		glBegin(GL_LINES);
 		for (j = 0; j < DIM - 1; j++)
@@ -576,23 +579,18 @@ void visualize(void)
 				{
 					float interval = (isoline_end_value - isoline_start_value) / (float)isoline_n;
 
-					
-					/*
+					float *values = (float *)malloc(interval - 1 + 2);
 					
 					int i = 0;
-					while (i <= isoline_n)
+					while (i < sizeof(values))
 					{
-						float sepx1, sepx2, sepx3, sepx4, sepy1, sepy2, sepy3, sepy4;
-						float midValue = isoline_start_value + (float)i * interval;
-
-
+						values[i] = isoline_start_value + i * interval;
 						i++;
 					}
-					*/
-				}
 
-				
-				
+					//printf("Is executing herer! \n");
+					multiLinesPointsInCell(px0, py0, wn, hn, rho[idx0], rho[idx1], rho[idx2], rho[idx3], values);
+				}	
 			}
 		}
 		glEnd();
