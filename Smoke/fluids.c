@@ -39,7 +39,10 @@ int   draw_divergence = 0;      //draw the divergence of grids
 const int DRAW_ISOLINE_ONE = 1; // only draw one isoline
 const int DRAW_ISOLINE_N = 2; // draw many isolines
 int draw_isoline = 0; // dedicate if the app is going to draw isolines or isoline
-float isoline_value;
+float isoline_value; // if only draw one isoline, then use this value
+float isoline_start_value = 0; // if draw many isolines, then start with this value
+float isoline_end_value = 0; // if draw many isolines, then end with this value
+int isoline_n = 1; // if draw many isolines, then the n is this value
 
 const int COLOR_BLACKWHITE=0;   //different types of color mapping: black-and-white, rainbow, banded
 const int COLOR_RAINBOW=1;
@@ -484,21 +487,6 @@ void visualize(void)
 					} else if (draw_divergence == DRAW_DIV_FORCE) {
 						float div = 0;
 						divInCell(fx[idx0], fy[idx0], fx[idx1], fy[idx1], fx[idx2], fy[idx2], fx[idx3], fy[idx3], wn, hn, &div);
-
-						/*
-						if (fx[idx0] > 0 || fx[idx1] > 0 || fx[idx2] > 0 || fx[idx3] > 0)
-						{
-							printf("======================\n");
-							printf("The div is %f \n", div);
-							printf("The fx 0 is %f \n", fx[idx0]);
-							printf("The fx 1 is %f \n", fx[idx1]);
-							printf("The fx 2 is %f \n", fx[idx2]);
-							printf("The fx 3 is %f \n", fx[idx3]);
-							printf("======================\n");
-						}
-						*/
-
-						
 						
 						div = div * 1000;
 						div = div + 0.5;
@@ -534,12 +522,13 @@ void visualize(void)
 		glEnd();
 	}
 
-	if (draw_isoline)
+	if (draw_isoline > 0)
 	{
 		int idx0, idx1, idx2, idx3;
 		double px0, py0, px1, py1, px2, py2, px3, py3;
 
-		isoline_value = 2.0;
+		isoline_value = 1.0;
+
 
 		glBegin(GL_LINES);
 		for (j = 0; j < DIM - 1; j++)
@@ -562,25 +551,47 @@ void visualize(void)
 				py3 = hn + (fftw_real)j * hn;
 				idx3 = (j * DIM) + (i + 1);
 
-				float sepx1, sepx2, sepx3, sepx4, sepy1, sepy2, sepy3, sepy4;
+				if (draw_isoline == DRAW_ISOLINE_ONE)
+				{
+					float sepx1, sepx2, sepx3, sepx4, sepy1, sepy2, sepy3, sepy4;
 
-				linePointsInCell(px0, py0, wn, hn, isoline_value, rho[idx0], rho[idx1], rho[idx2], rho[idx3], &sepx1, &sepy1, &sepx2, &sepy2, &sepx3, &sepy3, &sepx4, &sepy4);
+					linePointsInCell(px0, py0, wn, hn, isoline_value, rho[idx0], rho[idx1], rho[idx2], rho[idx3], &sepx1, &sepy1, &sepx2, &sepy2, &sepx3, &sepy3, &sepx4, &sepy4);
+
+					if (sepx1 > 0 && sepy1 > 0 && sepx2 > 0 && sepy2 > 0)
+					{
+
+						set_colormap(isoline_value);
+						glVertex2f(sepx1, sepy1);
+						glVertex2f(sepx2, sepy2);
+					}
+
+					if (sepx3 > 0 && sepy3 > 0 && sepx4 > 0 && sepy4 > 0)
+					{
+						set_colormap(isoline_value);
+						glVertex2f(sepx3, sepy3);
+						glVertex2f(sepx4, sepy4);
+					}
+				}
+				else if (draw_isoline == DRAW_ISOLINE_N)
+				{
+					float interval = (isoline_end_value - isoline_start_value) / (float)isoline_n;
+
+					
+					/*
+					
+					int i = 0;
+					while (i <= isoline_n)
+					{
+						float sepx1, sepx2, sepx3, sepx4, sepy1, sepy2, sepy3, sepy4;
+						float midValue = isoline_start_value + (float)i * interval;
+
+
+						i++;
+					}
+					*/
+				}
+
 				
-				if (sepx1 > 0 && sepy1 > 0 && sepx2 > 0 && sepy2 > 0)
-				{
-					printf("find some one \n");
-
-					glColor3f(1.0, 0, 0.0);
-					glVertex2f(sepx1, sepy1);
-					glVertex2f(sepx2, sepy2);
-				}
-
-				if (sepx3 > 0 && sepy3 > 0 && sepx4 > 0 && sepy4 > 0)
-				{
-					glColor3f(1.0, 0, 0.0);
-					glVertex2f(sepx3, sepy3);
-					glVertex2f(sepx4, sepy4);
-				}
 				
 			}
 		}
@@ -805,7 +816,7 @@ void keyboard(unsigned char key, int x, int y)
 	  case 'm': scalar_col++; if (scalar_col>COLOR_BANDS) scalar_col=COLOR_BLACKWHITE; break;
 	  case 'a': frozen = 1-frozen; break;
 	  case 'b': draw_divergence++; if (draw_divergence > 2) draw_divergence = 0; break;
-	  case 'i':draw_isoline++; if (draw_isoline > 1) draw_isoline = 0; break;
+	  case 'i':draw_isoline++; if (draw_isoline > 2) draw_isoline = 0; break;
 	  case 'q': exit(0);
 	}
 }

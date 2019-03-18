@@ -40,7 +40,7 @@ void linePointsInCell(float x1, float y1, float width, float height,float sepRho
 		*sepy3 = 0; *sepy4 = 0;
 	}
 	
-	else if (rho4 >= sepRho && rho1 >= sepRho && rho3< sepRho && rho4 < sepRho) // 0011
+	else if (rho4 >= sepRho && rho1 >= sepRho && rho3< sepRho && rho2 < sepRho) // 0011
 	{
 		*sepx1 = x1;
 		*sepy1 = y1 + height / 2.0;
@@ -192,4 +192,11 @@ void linePointsInCell(float x1, float y1, float width, float height,float sepRho
 		*sepy3 = 0; *sepy4 = 0;
 	}
 	
+}
+
+void multiLinesPointsInCell() {
+
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex2f(100, 300);
+	glVertex2d(20, 300);
 }
