@@ -177,8 +177,6 @@ void linePointsInCell(float x1, float y1, float width, float height,float sepRho
 		*sepx3 = 0; *sepx4 = 0;
 		*sepy3 = 0; *sepy4 = 0;
 	}
-	
-	
 	else if (rho2 >= sepRho && rho3 >= sepRho && rho4 >= sepRho && rho1 < sepRho) // 1110
 	{
 
@@ -194,9 +192,79 @@ void linePointsInCell(float x1, float y1, float width, float height,float sepRho
 	
 }
 
-void multiLinesPointsInCell() {
+void multiLinesPointsInCell(float startX, float startY, float rho1, float rho2, float rho3, float rho4,float *rhoValues) {
 
-	glColor3f(1.0, 0.0, 0.0);
-	glVertex2f(100, 300);
-	glVertex2d(20, 300);
+	int n = sizeof(rhoValues);
+
+	int leftbottom = 0;
+	int bottmright = 0;
+	int rightupper = 0;
+	int upperleft = 0;
+	int horizen = 0;
+	int vertical = 0;
+
+	for (size_t i = 0; i < n; i++)
+	{
+		float val = rhoValues[i];
+
+		if ((rho1 > val && rho2 > val && rho3 > val && rho4 > val) || (rho1 < val && rho2 < val && rho3 < val && rho4 < val)) {
+
+		}
+		else if (rho1 >= val && rho2 < val && rho3 < val && rho4 < val) // 0001
+		{
+
+		}
+		else if (rho4 >= val && rho1 < val && rho2 < val && rho3 < val) // 0010
+		{
+
+		}
+		else if (rho4 >= val && rho1 >= val && rho3 < val && rho2 < val) // 0011
+		{
+
+		}
+		else if (rho3 >= val && rho1 < val && rho2 < val && rho4 < val) // 0100
+		{
+
+		}
+		else if (rho3 >= val && rho1 >= val && rho2 < val && rho4 < val) // 0101
+		{
+
+		}
+		else if (rho3 >= val && rho4 >= val && rho1 < val && rho2 < val) // 0110
+		{
+
+		}
+		else if (rho1 >= val && rho3 >= val && rho4 >= val && rho2 < val) // 0111
+		{
+
+		}
+		else if (rho2 >= val && rho1 < val && rho3 < val && rho4 < val) // 1000
+		{
+
+		}
+		else if (rho1 >= val && rho2 >= val && rho3 < val && rho4 < val) // 1001
+		{
+
+		}
+		else if (rho2 >= val && rho4 >= val && rho1 < val && rho3 < val) // 1010
+		{
+
+		}
+		else if (rho1 >= val && rho2 >= val && rho4 >= val && rho3 < val) // 1011
+		{
+
+		}
+		else if (rho2 >= val && rho3 >= val && rho1 < val && rho4 < val) // 1100
+		{
+
+		}
+		else if (rho1 >= val && rho2 >= val && rho3 >= val && rho4 < val) // 1101
+		{
+
+		}
+		else if (rho2 >= val && rho3 >= val && rho4 >= val && rho1 < val) // 1110
+		{
+
+		}
+	}
 }
