@@ -100,6 +100,7 @@
   <ItemGroup>
     <ClInclude Include="..\divergenceAxis.h" />
     <ClInclude Include="..\hsvargb.h" />
+    <ClInclude Include="..\isolinesHelper.h" />
     <ClInclude Include="WTPartialDerivate.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

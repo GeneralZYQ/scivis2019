@@ -39,6 +39,7 @@ int   draw_divergence = 0;      //draw the divergence of grids
 const int DRAW_ISOLINE_ONE = 1; // only draw one isoline
 const int DRAW_ISOLINE_N = 2; // draw many isolines
 int draw_isoline = 0; // dedicate if the app is going to draw isolines or isoline
+float isoline_value;
 
 const int COLOR_BLACKWHITE=0;   //different types of color mapping: black-and-white, rainbow, banded
 const int COLOR_RAINBOW=1;
@@ -532,6 +533,62 @@ void visualize(void)
 		
 		glEnd();
 	}
+
+	if (draw_isoline)
+	{
+		int idx0, idx1, idx2, idx3;
+		double px0, py0, px1, py1, px2, py2, px3, py3;
+
+		glBegin(GL_LINES);
+		for (j = 0; j < DIM - 1; j++)
+		{
+			for (i = 0; i < DIM - 1; i++)
+			{
+				px0 = wn + (fftw_real)i * wn;
+				py0 = hn + (fftw_real)j * hn;
+				idx0 = (j * DIM) + i;
+
+				px1 = wn + (fftw_real)i * wn;
+				py1 = hn + (fftw_real)(j + 1) * hn;
+				idx1 = ((j + 1) * DIM) + i;
+
+				px2 = wn + (fftw_real)(i + 1) * wn;
+				py2 = hn + (fftw_real)(j + 1) * hn;
+				idx2 = ((j + 1) * DIM) + (i + 1);
+
+				px3 = wn + (fftw_real)(i + 1) * wn;
+				py3 = hn + (fftw_real)j * hn;
+				idx3 = (j * DIM) + (i + 1);
+
+				float sepx1, sepx2, sepx3, sepx4, sepy1, sepy2, sepy3, sepy4;
+
+				linePointsInCell(px0, py0, wn, hn, isoline_value, rho[idx0], rho[idx1], rho[idx2], rho[idx3], &sepx1, &sepy1, &sepx2, &sepy2, &sepx3, &sepy3, &sepx4, &sepy4);
+				
+
+				if (sepx1 > 0 && sepy1 > 0 && sepx2 > 0 && sepy2 > 0)
+				{
+					 
+				}
+
+				if (sepx3 > 0 && sepy3 > 0 && sepx4 > 0 && sepy4 > 0)
+				{
+					 
+				}
+				
+			}
+		}
+
+		glColor3f(0.5, 0.5, 0.5);
+		glVertex2f(10, 10);
+		glVertex2f(100, 100);
+
+		glColor3f(1.0, 0.0, 0.0);
+
+		glVertex2f(10, 100);
+		glVertex2f(100, 300);
+		glEnd();
+
+	}
 }
 
 
@@ -750,6 +807,7 @@ void keyboard(unsigned char key, int x, int y)
 	  case 'm': scalar_col++; if (scalar_col>COLOR_BANDS) scalar_col=COLOR_BLACKWHITE; break;
 	  case 'a': frozen = 1-frozen; break;
 	  case 'b': draw_divergence++; if (draw_divergence > 2) draw_divergence = 0; break;
+	  case 'i':draw_isoline++; if (draw_isoline > 1) draw_isoline = 0; break;
 	  case 'q': exit(0);
 	}
 }
@@ -829,6 +887,7 @@ int main(int argc, char **argv)
 	printf("m:     toggle thru scalar coloring\n");
 	printf("a:     toggle the animation on/off\n");
 	printf("b:     toggle the divergence on/off\n");
+	printf("i:     toggle the isolines on/off \n");
 	printf("q:     quit\n\n");
 
 	glutInit(&argc, argv);
