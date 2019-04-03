@@ -41,9 +41,9 @@ const int DRAW_ISOLINE_ONE = 1; // only draw one isoline
 const int DRAW_ISOLINE_N = 2; // draw many isolines
 int draw_isoline = 0; // dedicate if the app is going to draw isolines or isoline
 float isoline_value; // if only draw one isoline, then use this value
-float isoline_start_value = 0; // if draw many isolines, then start with this value
-float isoline_end_value = 0; // if draw many isolines, then end with this value
-int isoline_n = 1; // if draw many isolines, then the n is this value
+float isoline_start_value = 1.0; // if draw many isolines, then start with this value
+float isoline_end_value = 3.0; // if draw many isolines, then end with this value
+int isoline_n = 3; // if draw many isolines, then the n is this value
 
 const int COLOR_BLACKWHITE = 0;   //different types of color mapping: black-and-white, rainbow, banded
 const int COLOR_RAINBOW = 1;
@@ -301,8 +301,8 @@ void biasRainbow(float value, float huebias, float saturationbias, float vbias, 
 	if (value < 0) value = 0; if (value > 1) value = 1;
 	float fValue = value;
 
-	int numberth = fValue * 256;
-	fValue = (float)numberth * (1.0 / 256.0);
+	int numberth = fValue * colorNumbers;
+	fValue = (float)numberth * (1.0 / (float)colorNumbers);
 
 	//printf("the fvalue is %s \n", fValue);
 
@@ -339,8 +339,8 @@ void grayscale(float value, float *R, float *G, float *B) {
 
 	float fValue = value;
 
-	int numberth = fValue * 256;
-	fValue = (float)numberth * (1.0 / 256.0);
+	int numberth = fValue * colorNumbers;
+	fValue = (float)numberth * (1.0 / (float)colorNumbers);
 
 	// 0.2126R + 0.7152G + 0.0722B
 	/*
@@ -367,8 +367,8 @@ void yellowToBlue(float value, float *R, float *G, float *B) {
 
 	float fValue = value;
 
-	int numberth = fValue * 256;
-	fValue = (float)numberth * (1.0 / 256.0);
+	int numberth = fValue * colorNumbers;
+	fValue = (float)numberth * (1.0 / (float)colorNumbers);
 
 	fracBetween = fValue;
 
@@ -513,7 +513,7 @@ void visualize(void)
 					glColor3f(0.0, 1.0, 0.0); glVertex3f(px3, py3, vs * velo3);
 
 				}
-				else
+				else if(height_plot_type == HEIGHT_PLOT_FORCE)
 				{
 					static float maxForce = 0;
 					float force0 = sqrt(pow(fx[idx0], 2) + pow(fy[idx0], 2));
@@ -698,8 +698,8 @@ void visualize(void)
 			isoline_value = 1.0;
 
 			isoline_start_value = 1.0;
-			isoline_end_value = 2.0;
-			isoline_n = 4;
+			isoline_end_value = 3.0;
+			isoline_n = 3;
 
 			glBegin(GL_LINES);
 			for (j = 0; j < DIM - 1; j++)
@@ -745,9 +745,9 @@ void visualize(void)
 					}
 					else if (draw_isoline == DRAW_ISOLINE_N)
 					{
-						float interval = (isoline_end_value - isoline_start_value) / (float)isoline_n;
+						float interval = (isoline_end_value - isoline_start_value) / (float)(isoline_n - 1);
 
-						float *values = (float *)malloc(interval - 1 + 2);
+						float *values = (float *)malloc(isoline_n);
 
 						int i = 0;
 						while (i < sizeof(values))
@@ -838,10 +838,28 @@ void display1(void) {
 
 
 
-		if (scalar_col == COLOR_BANDS) {
+		if (scalar_col == COLOR_BANDS) { // blue to yellow
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glBegin(GL_QUADS);
+
+			for (size_t i = 0; i < colorNumbers; i++)
+			{
+				float startx = ((float)i / (float)colorNumbers) * 2 - 1.0;
+				float endx = startx + (float)i / (float)colorNumbers;
+
+				set_colormap((float)i * 4.0 / (float)colorNumbers);
+				glVertex2f(startx, 1.0);
+				set_colormap((float)i * 4.0 / (float)colorNumbers);
+				glVertex2f(startx, -1.0);
+				set_colormap((float)(i + 1) * 4.0 / (float)colorNumbers);
+				glVertex2f(endx, -1.0);
+				set_colormap((float)(i + 1) * 4.0 / (float)colorNumbers);
+				glVertex2f(endx, 1.0);
+			}
+
+			/*
+			
 			glColor3f(0.0f, 0.0f, 1.0f); // make this vertex blue
 			glVertex2f(-1.0, 1.0);
 			glColor3f(0.0f, 0.0f, 1.0f); // make this vertex blue
@@ -850,10 +868,28 @@ void display1(void) {
 			glVertex2f(1.0, -1.0);
 			glColor3f(1.0f, 1.0f, 0.0f); // make this vertex yellow
 			glVertex2f(1.0, 1.0);
+			*/
 
 		}
 		else if (scalar_col == COLOR_BLACKWHITE) {
 
+			for (size_t i = 0; i < colorNumbers; i++)
+			{
+				float startx = ((float)i / (float)colorNumbers) * 2 - 1.0;
+				float endx = startx + (float)i / (float)colorNumbers;
+
+				set_colormap((float)i * 4.0 / (float)colorNumbers);
+				glVertex2f(startx, 1.0);
+				set_colormap((float)i * 4.0 / (float)colorNumbers);
+				glVertex2f(startx, -1.0);
+				set_colormap((float)(i + 1) * 4.0 / (float)colorNumbers);
+				glVertex2f(endx, -1.0);
+				set_colormap((float)(i + 1) * 4.0 / (float)colorNumbers);
+				glVertex2f(endx, 1.0);
+			}
+
+			/*
+			
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glBegin(GL_QUADS);
 			glColor3f(1.0f, 1.0f, 1.0f); // make this vertex 
@@ -865,10 +901,29 @@ void display1(void) {
 			glVertex2f(1.0, -1.0);
 			glColor3f(0.0f, 0.0f, 0.0f); // make this vertex 
 			glVertex2f(1.0, 1.0);
+			*/
 
 		}
 		else {
 
+			for (size_t i = 0; i < colorNumbers; i++)
+			{
+				float startx = ((float)i / (float)colorNumbers) * 2 - 1.0;
+				float endx = startx + (float)i / (float)colorNumbers;
+
+				set_colormap((float)i * 4.0 / (float)colorNumbers);
+				glVertex2f(startx, 1.0);
+				set_colormap((float)i * 4.0 / (float)colorNumbers);
+				glVertex2f(startx, -1.0);
+				set_colormap((float)(i + 1) * 4.0 / (float)colorNumbers);
+				glVertex2f(endx, -1.0);
+				set_colormap((float)(i + 1) * 4.0 / (float)colorNumbers);
+				glVertex2f(endx, 1.0);
+			}
+
+			/*
+			
+
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glBegin(GL_QUADS);
 			glColor3f(0.0f, 0.0f, 0.8f); // make this vertex 
@@ -925,6 +980,7 @@ void display1(void) {
 			glVertex2f(1.0, -1.0);
 			glColor3f(0.8f, 0.0f, 0.0f); // make this vertex 
 			glVertex2f(1.0, 1.0);
+			*/
 		}
 	}
 
@@ -1016,10 +1072,142 @@ void keyboard(unsigned char key, int x, int y)
 		if (draw_smoke == 0) draw_vecs = 1; break;
 	case 'y': draw_vecs = 1 - draw_vecs;
 		if (draw_vecs == 0) draw_smoke = 1; break;
-	case 'm': scalar_col++; if (scalar_col > COLOR_BANDS) scalar_col = COLOR_BLACKWHITE; break;
+	case 'm': 
+	
+		scalar_col++; if (scalar_col > COLOR_BANDS) scalar_col = COLOR_BLACKWHITE; break;
 	case 'a': frozen = 1 - frozen; break;
-	case 'b': draw_divergence++; if (draw_divergence > 2) draw_divergence = 0; break;
+	case 'd': draw_divergence++; if (draw_divergence > 2) draw_divergence = 0; break;
 	case 'i':draw_isoline++; if (draw_isoline > 2) draw_isoline = 0; break;
+	case 'h': {
+		if (draw_3D == 1)
+		{
+			height_plot_type = height_plot_type + 1;
+			if (height_plot_type > 3)
+			{
+				height_plot_type = 1;
+			}
+		}
+		break;
+	}
+	case '1': {
+		
+		if (draw_isoline == DRAW_ISOLINE_ONE)
+		{
+			isoline_value = 1.0;
+		}
+
+		hbias -= 0.01;
+		if (hbias < -0.3)
+		{
+			hbias = 0;
+		}
+		break;
+	} 
+	case '2': {
+
+		if (draw_isoline == DRAW_ISOLINE_ONE)
+		{
+			isoline_value = 2.0;
+		}
+
+		hbias += 0.01;
+		if (hbias > 0.3)
+		{
+			hbias = 0;
+		}
+		break;
+	}
+	case '3': {
+
+		if (draw_isoline == DRAW_ISOLINE_ONE)
+		{
+			isoline_value = 3.0;
+		}
+
+		sbias -= 0.01;
+		if (sbias < -0.3)
+		{
+			sbias = 0;
+		}
+		break;
+	}
+	case '4': {
+
+		if (draw_isoline == DRAW_ISOLINE_ONE)
+		{
+			isoline_value = 4.0;
+		}
+
+		sbias += 0.01;
+		if (sbias > 0.3)
+		{
+			sbias = 0;
+		}
+		break;
+	}
+	case '5': {
+
+		if (draw_isoline == DRAW_ISOLINE_ONE)
+		{
+			isoline_value = 5.0;
+		}
+
+		vbias -= 0.01;
+		if (vbias < -0.3)
+		{
+			vbias = 0;
+		}
+		break;
+	}
+	case '6': {
+
+		if (draw_isoline == DRAW_ISOLINE_ONE)
+		{
+			isoline_value = 6.0;
+		}
+
+		vbias += 0.01;
+		if (vbias > 0.3)
+		{
+			vbias = 0;
+		}
+		break;
+	} 
+	case '7': {
+
+		if (draw_isoline == DRAW_ISOLINE_ONE)
+		{
+			isoline_value = 7.0;
+		}
+
+		colorNumbers = 256;
+		break;
+	}
+	case '8': {
+
+		if (draw_isoline == DRAW_ISOLINE_ONE)
+		{
+			isoline_value = 8.0;
+		}
+
+		colorNumbers = 128;
+		break;
+	}
+	case '9': {
+
+		if (draw_isoline == DRAW_ISOLINE_ONE)
+		{
+			isoline_value = 9.0;
+		}
+
+		colorNumbers = 64;
+		break;
+	} 
+	case '0': {
+		colorNumbers = 32;
+		break;
+	}
+			  
 	case 'q': exit(0);
 	}
 }
@@ -1183,7 +1371,7 @@ int main(int argc, char **argv)
 	printf("V/vy:   increase decrease fluid viscosity\n");
 	printf("x:     toggle drawing matter on/off\n");
 	printf("y:     toggle drawing hedgehogs on/off\n");
-	printf("m:     toggle thru scalar coloring\n");
+	printf("m:     toggle color mapping\n");
 	printf("a:     toggle the animation on/off\n");
 	printf("b:     toggle the divergence on/off\n");
 	printf("i:     toggle the isolines on/off \n");
@@ -1223,12 +1411,12 @@ int main(int argc, char **argv)
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 		glutInitWindowSize(500, 600);
-		mainWindow = glutCreateWindow("Real-time smoke simulation and visualization");
+		mainWindow = glutCreateWindow(" smoking");
 		glutDisplayFunc(display);
 		glutReshapeFunc(reshape);
 
 
-		//glutIdleFunc(do_one_simulation_step);
+	    glutIdleFunc(do_one_simulation_step);
 		glutKeyboardFunc(keyboard);
 		glutMotionFunc(drag);
 
