@@ -63,7 +63,7 @@ int glOrtho_xmax = 0;
 int glOrtho_ymin = 0;
 int glOrtho_ymax = 0;
 
-int draw_3D = 1; // if draw height plot 
+int draw_3D = 0; // if draw height plot 
 int wWidth = 500, wHeight = 500;
 int xFar = 0.0f, yFar = 0.0f, zFar = 0.0f;
 double mMatrix[16];
@@ -833,10 +833,33 @@ void display1(void) {
 
 	//printf("the colo is %d \n", scalar_col);
 
-	if (draw_vecs == 0)
+	if (draw_vecs == 0 || draw_divergence == 1)
 	{
 
+		if (draw_divergence == 1)
+		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glBegin(GL_QUADS);
 
+			for (size_t i = 0; i < colorNumbers; i++)
+			{
+				float startx = ((float)i / (float)colorNumbers) * 2 - 1.0;
+				float endx = startx + (float)i / (float)colorNumbers;
+
+				set_colormap((float)i * 4.0 / (float)colorNumbers);
+				glVertex2f(startx, 1.0);
+				set_colormap((float)i * 4.0 / (float)colorNumbers);
+				glVertex2f(startx, -1.0);
+				set_colormap((float)(i + 1) * 4.0 / (float)colorNumbers);
+				glVertex2f(endx, -1.0);
+				set_colormap((float)(i + 1) * 4.0 / (float)colorNumbers);
+				glVertex2f(endx, 1.0);
+			}
+		}
+		else
+		{
+
+		
 
 		if (scalar_col == COLOR_BANDS) { // blue to yellow
 
@@ -873,6 +896,9 @@ void display1(void) {
 		}
 		else if (scalar_col == COLOR_BLACKWHITE) {
 
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glBegin(GL_QUADS);
+
 			for (size_t i = 0; i < colorNumbers; i++)
 			{
 				float startx = ((float)i / (float)colorNumbers) * 2 - 1.0;
@@ -890,8 +916,7 @@ void display1(void) {
 
 			/*
 			
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glBegin(GL_QUADS);
+			
 			glColor3f(1.0f, 1.0f, 1.0f); // make this vertex 
 			glVertex2f(-1.0, 1.0);
 			glColor3f(1.0f, 1.0f, 1.0f); // make this vertex 
@@ -906,26 +931,28 @@ void display1(void) {
 		}
 		else {
 
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glBegin(GL_QUADS);
+
 			for (size_t i = 0; i < colorNumbers; i++)
 			{
 				float startx = ((float)i / (float)colorNumbers) * 2 - 1.0;
 				float endx = startx + (float)i / (float)colorNumbers;
 
-				set_colormap((float)i * 4.0 / (float)colorNumbers);
+				set_colormap((float)i * 2.0 / (float)colorNumbers);
 				glVertex2f(startx, 1.0);
-				set_colormap((float)i * 4.0 / (float)colorNumbers);
+				set_colormap((float)i * 2.0 / (float)colorNumbers);
 				glVertex2f(startx, -1.0);
-				set_colormap((float)(i + 1) * 4.0 / (float)colorNumbers);
+				set_colormap((float)(i + 1) * 2.0 / (float)colorNumbers);
 				glVertex2f(endx, -1.0);
-				set_colormap((float)(i + 1) * 4.0 / (float)colorNumbers);
+				set_colormap((float)(i + 1) * 2.0 / (float)colorNumbers);
 				glVertex2f(endx, 1.0);
 			}
 
 			/*
 			
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glBegin(GL_QUADS);
+			
 			glColor3f(0.0f, 0.0f, 0.8f); // make this vertex 
 			glVertex2f(-1.0, 1.0);
 			glColor3f(0.0f, 0.0f, 0.8f); // make this vertex 
@@ -982,6 +1009,7 @@ void display1(void) {
 			glVertex2f(1.0, 1.0);
 			*/
 		}
+	}
 	}
 
 	glEnd();

@@ -2,6 +2,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+const float halfAngle = (7.5 / 180.0) * M_PI;
+
 
 // x1: start x, y1 : start y( start x and start y is the left bottom corner of the cell), height: cell height, 
 //width : cell widht , vecx : xVelocity, vecy : y Velocity 
@@ -22,7 +24,7 @@ void getCorrectCoordinates(float x1, float y1, float height, float width, float 
 		float y = height / 2.0;
 
 		float knownAngle = atan(tana);
-		float innerAngle = M_PI - knownAngle - (15.0 / 180.0) * M_PI;
+		float innerAngle = M_PI - knownAngle - halfAngle;
 		float gisAngle = M_PI - innerAngle;
 		if (gisAngle == M_PI / 2.0)
 		{
@@ -35,7 +37,7 @@ void getCorrectCoordinates(float x1, float y1, float height, float width, float 
 		float finnalY = -height / 2.0;
 
 
-		float secondAngle = M_PI - (M_PI - knownAngle) - (15.0 / 180.0) * M_PI;
+		float secondAngle = M_PI - (M_PI - knownAngle) - halfAngle;
 		if (secondAngle == M_PI / 2.0)
 		{
 			secondAngle = secondAngle + 0.01;
@@ -60,7 +62,7 @@ void getCorrectCoordinates(float x1, float y1, float height, float width, float 
 		float y = height / 2.0;
 
 		float innerAngle = M_PI - atan(tana);
-		float firstAngle = M_PI - innerAngle - (15.0 / 180.0) * M_PI;
+		float firstAngle = M_PI - innerAngle - halfAngle;
 		if (firstAngle == M_PI / 2.0)
 		{
 			firstAngle = firstAngle + 0.01;
@@ -71,7 +73,7 @@ void getCorrectCoordinates(float x1, float y1, float height, float width, float 
 		float firstFinalY = -height / 2.0;
 
 		float secondInnerAngle = atan(tana);
-		float secondAngle = M_PI - (M_PI - secondInnerAngle - (15.0 / 180.0) * M_PI);
+		float secondAngle = M_PI - (M_PI - secondInnerAngle - halfAngle);
 		if (secondAngle == M_PI / 2.0)
 		{
 			secondAngle = secondAngle + 0.01;
@@ -93,7 +95,7 @@ void getCorrectCoordinates(float x1, float y1, float height, float width, float 
 		float tana = vecy / vecx;
 		float firstX = (-height / 2.0) / tana;
 
-		float shouldAngle = M_PI - (M_PI - atan(tana)) - (15.0 / 180.0) * M_PI;
+		float shouldAngle = M_PI - (M_PI - atan(tana)) - halfAngle;
 		if (shouldAngle == M_PI / 2.0)
 		{
 			shouldAngle = shouldAngle + 0.01;
@@ -106,7 +108,7 @@ void getCorrectCoordinates(float x1, float y1, float height, float width, float 
 		float secondY = height / 2.0;
 		float secondX = (secondY - firstB) / firstA;
 
-		float secondAngle = atan(tana) + (15.0 / 180.0) * M_PI;
+		float secondAngle = atan(tana) + halfAngle;
 		if (secondAngle == M_PI / 2.0)
 		{
 			secondAngle = secondAngle + 0.001;
@@ -131,7 +133,7 @@ void getCorrectCoordinates(float x1, float y1, float height, float width, float 
 		float firstX = (-height / 2.0) / tana;
 		float firstY = -height / 2.0;
 
-		float firstAngle = atan(tana) + (15.0 / 180.0) * M_PI;
+		float firstAngle = atan(tana) + halfAngle;
 		if (firstAngle == M_PI / 2.0)
 		{
 			firstAngle = firstAngle + 0.001;
@@ -141,7 +143,7 @@ void getCorrectCoordinates(float x1, float y1, float height, float width, float 
 		float secondY = height / 2.0;
 		float secondX = (secondY - firstB) / firstA;
 
-		float secondAngle = atan(tana) - (15.0 / 180.0) * M_PI;
+		float secondAngle = atan(tana) - halfAngle;
 		if (secondAngle == M_PI / 2.0)
 		{
 			secondAngle = secondAngle + 0.001;
